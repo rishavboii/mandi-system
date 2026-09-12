@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agri Farma Express | Operational Mandi Platform</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Alpine.js -->
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-100 text-slate-900 font-sans antialiased" 
+      x-data="agriApp()">
+
+    <!-- TOP NAVIGATION BAR -->
+    <header class="bg-emerald-800 text-white sticky top-0 z-50 shadow-md">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-3 cursor-pointer" @click="activeTab = 'portal'">
+                <div class="bg-amber-400 text-emerald-950 p-2 rounded-xl font-black text-xl tracking-wider">AFE</div>
+                <div>
+                    <h1 class="font-bold text-lg leading-none">Agri Farma Express</h1>
+                    <p class="text-[11px] text-emerald-200 mt-1">Smart Procurement & Queue Infrastructure</p>
+                </div>
+            </div>
+            
+            <!-- Navigation -->
+            <nav class="hidden md:flex space-x-1 text-xs font-semibold bg-emerald-900/50 p-1.5 rounded-xl">
+                <button @click="activeTab = 'portal'" :class="activeTab === 'portal' ? 'bg-emerald-600 text-white' : 'text-emerald-200 hover:text-white'" class="px-4 py-2 rounded-lg transition">Farmer Portal</button>
+                <button @click="activeTab = 'live-queue'" :class="activeTab === 'live-queue' ? 'bg-emerald-600 text-white' : 'text-emerald-200 hover:text-white'" class="px-4 py-2 rounded-lg transition flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> Mandi Live Queue
+                </button>
+                <button @click="activeTab = 'terminal'" :class="activeTab === 'terminal' ? 'bg-emerald-600 text-white' : 'text-emerald-200 hover:text-white'" class="px-4 py-2 rounded-lg transition">Mandi Official Terminal</button>
+                <button @click="activeTab = 'stories'" :class="activeTab === 'stories' ? 'bg-emerald-600 text-white' : 'text-emerald-200 hover:text-white'" class="px-4 py-2 rounded-lg transition">Field Stories & Impact</button>
+            </nav>
+
+            <div class="text-right">
+                <span class="inline-flex items-center gap-1 bg-emerald-900 text-emerald-300 text-[10px] px-2.5 py-1 rounded-full border border-emerald-700">
+                    <i class="fa-solid fa-server text-[9px]"></i> DOCA Cloud Sync: Online
+                </span>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <main class="max-w-7xl mx-auto px-4 py-6">
+
+        <!-- SECTION 1: FARMER PORTAL & MULTI-CHANNEL BOOKING -->
+        <section x-show="activeTab === 'portal'" class="space-y-6">
+            
+            <!-- Welcome Header -->
+            <div class="bg-gradient-to-r from-emerald-700 to-teal-800 text-white p-6 md:p-8 rounded-2xl shadow-sm relative overflow-hidden">
+                <div class="relative z-10 space-y-2 max-w-2xl">
+                    <span class="bg-emerald-900/60 text-emerald-200 text-xs px-3 py-1 rounded-full font-medium border border-emerald-500/30">Direct Procurement System</span>
+                    <h2 class="text-2xl md:text-3xl font-extrabold">Dynamic Token Allocation Portal</h2>
+                    <p class="text-emerald-100 text-sm">Schedule crop delivery, bypass 12–48 hour Mandi queues, and track Direct Benefit Transfer (DBT) payments in real-time.</p>
+                </div>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-6">
+                <!-- Channel Selector & Token Form -->
+                <div class="md:col-span-2 bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-5">
+                    <div>
+                        <h3 class="font-bold text-slate-800 text-base">Select Access Channel</h3>
+                        <p class="text-xs text-slate-500">Agri Farma Express bridges digital and non-digital access modes.</p>
+                    </div>
+
+                    <!-- Channel Tabs -->
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                        <button @click="channel = 'pwa'" :class="channel === 'pwa' ? 'border-emerald-600 bg-emerald-50 text-emerald-800' : 'border-slate-200 text-slate-600'" class="p-3 border rounded-xl text-left transition flex flex-col justify-between h-20">
+                            <i class="fa-solid fa-mobile-screen text-base text-emerald-600"></i>
+                            <span class="text-xs font-bold">App / PWA</span>
+                        </button>
+                        <button @click="channel = 'ivr'" :class="channel === 'ivr' ? 'border-emerald-600 bg-emerald-50 text-emerald-800' : 'border-slate-200 text-slate-600'" class="p-3 border rounded-xl text-left transition flex flex-col justify-between h-20">
+                            <i class="fa-solid fa-phone-volume text-base text-emerald-600"></i>
+                            <span class="text-xs font-bold">IVR / SMS</span>
+                        </button>
+                        <button @click="channel = 'whatsapp'" :class="channel === 'whatsapp' ? 'border-emerald-600 bg-emerald-50 text-emerald-800' : 'border-slate-200 text-slate-600'" class="p-3 border rounded-xl text-left transition flex flex-col justify-between h-20">
+                            <i class="fa-brands fa-whatsapp text-base text-emerald-600"></i>
+                            <span class="text-xs font-bold">WhatsApp</span>
+                        </button>
+                        <button @click="channel = 'csc'" :class="channel === 'csc' ? 'border-emerald-600 bg-emerald-50 text-emerald-800' : 'border-slate-200 text-slate-600'" class="p-3 border rounded-xl text-left transition flex flex-col justify-between h-20">
+                            <i class="fa-solid fa-user-gear text-base text-emerald-600"></i>
+                            <span class="text-xs font-bold">CSC / KVK</span>
+                        </button>
+                    </div>
+
+                    <!-- App / PWA Form -->
+                    <form x-show="channel === 'pwa'" @submit.prevent="generateToken('PWA App')" class="space-y-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Farmer Full Name</label>
+                                <input type="text" x-model="form.name" required placeholder="e.g. Ramesh Kumar" class="w-full p-2.5 text-sm rounded-lg border border-slate-300 focus:ring-2 focus:ring-emerald-500 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Aadhaar Number (e-KYC Validation Placeholder)</label>
+                                <input type="text" x-model="form.aadhaar" maxlength="12" required placeholder="12-digit Aadhaar Number" class="w-full p-2.5 text-sm rounded-lg border border-slate-300 focus:ring-2 focus:ring-emerald-500 outline-none">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Crop Type</label>
+                                <select x-model="form.crop" class="w-full p-2.5 text-sm rounded-lg border border-slate-300 focus:ring-2 focus:ring-emerald-500 outline-none">
+                                    <option>Wheat (Gehun)</option>
+                                    <option>Paddy (Dhaan)</option>
+                                    <option>Pulses (Dal)</option>
+                                    <option>Mustard (Sarson)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Weight (Quintals)</label>
+                                <input type="number" x-model="form.weight" required placeholder="e.g. 50" class="w-full p-2.5 text-sm rounded-lg border border-slate-300 focus:ring-2 focus:ring-emerald-500 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Target Mandi / Hub</label>
+                                <select x-model="form.mandi" class="w-full p-2.5 text-sm rounded-lg border border-slate-300 focus:ring-2 focus:ring-emerald-500 outline-none">
+                                    <option>Central APMC Yard - Hub 01</option>
+                                    <option>FCI Regional Procurement Depot</option>
+                                    <option>NAFED Grain Terminal - South</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl text-sm shadow transition">
+                            <i class="fa-solid fa-ticket mr-1.5"></i> Request Dynamic Slot Token
+                        </button>
+                    </form>
+
+                    <!-- IVR Simulator -->
+                    <div x-show="channel === 'ivr'" class="bg-slate-900 text-slate-100 p-5 rounded-xl space-y-4">
+                        <div class="flex justify-between items-center text-xs font-mono text-emerald-400 border-b border-slate-800 pb-2">
+                            <span><i class="fa-solid fa-phone mr-1"></i> Toll-Free IVR Service: 1800-123-AGRI</span>
+                            <span>USSD: *123#</span>
+                        </div>
+                        <div class="space-y-2 text-xs">
+                            <p class="bg-slate-800 p-3 rounded-lg border border-slate-700">🔊 <em>"Namaskar! Agri Farma Express mein aapka swagat hai. Gehun ke token ke liye 1 dabayein."</em></p>
+                            <p class="bg-slate-800 p-3 rounded-lg border border-slate-700">🔊 <em>"Apna Mandi Code (101) aur vajan quintal mein enter karein."</em></p>
+                        </div>
+                        <button @click="generateToken('IVR System')" class="w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold py-2.5 rounded-lg text-xs transition">
+                            Simulate Automated Voice/USSD Slot Booking
+                        </button>
+                    </div>
+
+                    <!-- WhatsApp Bot Simulator -->
+                    <div x-show="channel === 'whatsapp'" class="bg-emerald-950 text-emerald-100 p-5 rounded-xl space-y-3 font-sans">
+                        <div class="flex items-center space-x-2 border-b border-emerald-800 pb-2">
+                            <i class="fa-brands fa-whatsapp text-emerald-400 text-xl"></i>
+                            <span class="font-bold text-sm">Vernacular WhatsApp Assistant</span>
+                        </div>
+                        <div class="space-y-2 text-xs">
+                            <div class="bg-emerald-900 p-2.5 rounded-lg max-w-[85%]">Farmer: "Mujhe kal ke liye Wheat slot book karna hai."</div>
+                            <div class="bg-emerald-800 p-2.5 rounded-lg max-w-[85%] ml-auto">Bot: "Aadhaar e-KYC verified. Available slot: Tomorrow 10:00 AM at Central Mandi. Reply 'HAAN' to confirm."</div>
+                        </div>
+                        <button @click="generateToken('WhatsApp Bot')" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-lg text-xs transition">
+                            Simulate WhatsApp Token Request
+                        </button>
+                    </div>
+
+                    <!-- CSC Operator Simulator -->
+                    <div x-show="channel === 'csc'" class="bg-slate-50 border border-slate-200 p-5 rounded-xl space-y-3">
+                        <h4 class="font-bold text-slate-800 text-sm">Assisted Operator Desk (KVKs & CSCs)</h4>
+                        <p class="text-xs text-slate-600">Local village representatives scan land records and issue tokens on behalf of non-tech farmers.</p>
+                        <button @click="generateToken('CSC Operator Desk')" class="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-bold py-2.5 rounded-lg text-xs transition">
+                            Issue Assisted Token
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Generated Token View & Live Geofence Simulator -->
+                <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <h3 class="font-bold text-slate-800 text-base mb-1">Your Token Pass</h3>
+                        <p class="text-xs text-slate-500 mb-4">Real-time status synced via WebSocket</p>
+
+                        <template x-if="activeToken">
+                            <div class="bg-slate-50 border-2 border-emerald-500/30 rounded-xl p-4 space-y-3 text-center">
+                                <span class="inline-block bg-emerald-100 text-emerald-800 text-[10px] px-2 py-0.5 rounded font-bold uppercase" x-text="activeToken.channel"></span>
+                                <div class="text-2xl font-mono font-black text-slate-800 tracking-wider" x-text="activeToken.id"></div>
+                                
+                                <div class="bg-white p-3 rounded-lg border border-slate-200 inline-block shadow-inner">
+                                    <i class="fa-solid fa-qrcode text-6xl text-slate-800"></i>
+                                    <p class="text-[9px] text-slate-400 mt-1">Mandi Gate Verification QR</p>
+                                </div>
+
+                                <div class="text-left text-xs space-y-1 bg-white p-3 rounded-lg border border-slate-200">
+                                    <div><span class="text-slate-500">Farmer:</span> <strong x-text="activeToken.name"></strong></div>
+                                    <div><span class="text-slate-500">Crop:</span> <strong x-text="activeToken.crop"></strong> (<span x-text="activeToken.weight"></span> Quintals)</div>
+                                    <div><span class="text-slate-500">Scheduled Window:</span> <strong>Today, 10:30 AM - 11:30 AM</strong></div>
+                                    <div><span class="text-slate-500">Mandi:</span> <strong x-text="activeToken.mandi"></strong></div>
+                                </div>
+
+                                <!-- GPS Geofence Control Simulator -->
+                                <div class="p-3 bg-emerald-50 rounded-lg border border-emerald-200 text-left space-y-2">
+                                    <div class="flex justify-between items-center text-xs">
+                                        <span class="font-bold text-emerald-900">GPS Geofence Status</span>
+                                        <span :class="activeToken.inGeofence ? 'bg-emerald-600 text-white' : 'bg-amber-500 text-white'" class="text-[10px] px-2 py-0.5 rounded-full font-bold" x-text="activeToken.inGeofence ? 'Active (< 2 km)' : 'Standby (> 2 km)'"></span>
+                                    </div>
+                                    <p class="text-[10px] text-slate-600">Priority queue placement triggers automatically when arriving within a 2 km perimeter.</p>
+                                    <button @click="toggleGeofence()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-medium py-1.5 rounded text-[11px] transition">
+                                        <i class="fa-solid fa-location-crosshairs mr-1"></i> Simulate Moving < 2 km Radius
+                                    </button>
+                                </div>
+                            </div>
+                        </template>
+
+                        <template x-if="!activeToken">
+                            <div class="h-64 border-2 border-dashed border-slate-200 rounded-xl flex flex-col items-center justify-center text-center p-4">
+                                <i class="fa-solid fa-ticket text-4xl text-slate-300 mb-2"></i>
+                                <p class="text-xs font-bold text-slate-500">No Active Token Generated</p>
+                                <p class="text-[11px] text-slate-400 mt-1">Fill out the form or use an access channel to issue a test token.</p>
+                            </div>
+                        </template>
+                    </div>
+
+                    <div class="mt-4 pt-3 border-t border-slate-100 text-[10px] text-slate-400 flex items-center justify-between">
+                        <span><i class="fa-solid fa-shield-halved text-emerald-600 mr-1"></i> Aadhaar e-KYC Verified</span>
+                        <span>PFMS DBT Ready</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: MANDI LIVE QUEUE DISPLAY (PUBLIC DASHBOARD) -->
+        <section x-show="activeTab === 'live-queue'" class="space-y-6">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                <div>
+                    <h2 class="text-xl font-bold text-slate-800">Live Mandi Queue & Gate Display Board</h2>
+                    <p class="text-xs text-slate-500">WebSocket real-time updates synced with weighbridges and geofence tracking.</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="text-xs text-slate-500">Simulate Traffic Surge:</span>
+                    <button @click="addMockFarmer()" class="bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold px-3 py-2 rounded-lg transition">
+                        + Add Incoming Farmer Vehicle
+                    </button>
+                </div>
+            </div>
+
+            <!-- Operational Metrics Grid -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="bg-white p-4 rounded-xl border border-slate-200">
+                    <span class="text-xs text-slate-500 font-medium">Daily Weighbridge Throughput</span>
+                    <div class="text-2xl font-bold text-slate-800 mt-1">1,420 <span class="text-xs text-slate-400 font-normal">Quintals</span></div>
+                    <span class="text-[10px] text-emerald-600 font-medium">94% of Optimal Capacity</span>
+                </div>
+                <div class="bg-white p-4 rounded-xl border border-slate-200">
+                    <span class="text-xs text-slate-500 font-medium">Average Wait Time</span>
+                    <div class="text-2xl font-bold text-emerald-600 mt-1">1 hr 15 min</div>
+                    <span class="text-[10px] text-emerald-700 font-medium">Reduced from 36 hours</span>
+                </div>
+                <div class="bg-white p-4 rounded-xl border border-slate-200">
+                    <span class="text-xs text-slate-500 font-medium">Active Geofenced Trucks</span>
+                    <div class="text-2xl font-bold text-slate-800 mt-1" x-text="queue.filter(q => q.inGeofence).length"></div>
+                    <span class="text-[10px] text-slate-400">Within 2 km Perimeter</span>
+                </div>
+                <div class="bg-white p-4 rounded-xl border border-slate-200">
+                    <span class="text-xs text-slate-500 font-medium">Completed Deliveries Today</span>
+                    <div class="text-2xl font-bold text-slate-800 mt-1">84 Vehicles</div>
+                    <span class="text-[10px] text-emerald-600 font-medium">Direct Benefit Transfer Initiated</span>
+                </div>
+            </div>
+
+            <!-- Live Queue Table -->
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                <div class="p-4 bg-slate-50 border-b border-slate-200 font-bold text-xs text-slate-700 flex justify-between items-center">
+                    <span>Active Queue Line (Real-Time Dynamic Schedule)</span>
+                    <span class="text-[10px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-mono">Live WebSocket Active</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-xs">
+                        <thead>
+                            <tr class="bg-slate-100 text-slate-600 border-b border-slate-200">
+                                <th class="p-3">Token ID</th>
+                                <th class="p-3">Farmer Name</th>
+                                <th class="p-3">Crop / Quantity</th>
+                                <th class="p-3">Scheduled Slot</th>
+                                <th class="p-3">Geofence Status</th>
+                                <th class="p-3">Stage</th>
+                                <th class="p-3">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-200">
+                            <template x-for="(item, index) in queue" :key="item.id">
+                                <tr class="hover:bg-slate-50 transition" :class="item.isUser ? 'bg-emerald-50/50 font-semibold' : ''">
+                                    <td class="p-3 font-mono font-bold text-slate-800" x-text="item.id"></td>
+                                    <td class="p-3">
+                                        <span x-text="item.name"></span>
+                                        <span x-show="item.isUser" class="ml-1 text-[9px] bg-emerald-600 text-white px-1.5 py-0.2 rounded">YOU</span>
+                                    </td>
+                                    <td class="p-3" x-text="item.crop + ' (' + item.weight + ' Qtl)'"></td>
+                                    <td class="p-3 text-slate-600" x-text="item.slot"></td>
+                                    <td class="p-3">
+                                        <span :class="item.inGeofence ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-500'" class="px-2 py-0.5 rounded-full text-[10px] font-bold">
+                                            <i class="fa-solid fa-location-dot mr-1"></i>
+                                            <span x-text="item.inGeofence ? 'Inside 2km' : 'Outside 2km'"></span>
+                                        </span>
+                                    </td>
+                                    <td class="p-3">
+                                        <span :class="{
+                                            'bg-amber-100 text-amber-800': item.stage === 'Waiting Entry',
+                                            'bg-blue-100 text-blue-800': item.stage === 'Weighbridge Quality Test',
+                                            'bg-emerald-100 text-emerald-800': item.stage === 'Unloading Completed'
+                                        }" class="px-2 py-0.5 rounded text-[10px] font-medium" x-text="item.stage"></span>
+                                    </td>
+                                    <td class="p-3">
+                                        <button @click="advanceStage(index)" class="bg-slate-800 hover:bg-slate-900 text-white text-[10px] px-2.5 py-1 rounded transition">
+                                            Advance Stage
+                                        </button>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: MANDI OFFICIAL OPERATIONAL TERMINAL -->
+        <section x-show="activeTab === 'terminal'" class="space-y-6">
+            <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-6">
+                <div>
+                    <h2 class="text-xl font-bold text-slate-800">Mandi Gate & Verification Terminal</h2>
+                    <p class="text-xs text-slate-500">Low-hardware operational desk for Mandi staff to process incoming deliveries.</p>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-6">
+                    <!-- Scanner Interface -->
+                    <div class="border border-slate-200 rounded-xl p-5 space-y-4 bg-slate-50">
+                        <h3 class="font-bold text-slate-800 text-sm"><i class="fa-solid fa-qrcode mr-1.5 text-emerald-700"></i> Mandi Entry QR Verification</h3>
+                        <p class="text-xs text-slate-600">Scan token QR code presented by farmer on smartphone, SMS slip, or printed receipt.</p>
+                        
+                        <div class="bg-slate-900 rounded-xl p-8 text-center text-slate-400 space-y-3">
+                            <i class="fa-solid fa-camera text-3xl text-emerald-400 animate-pulse"></i>
+                            <p class="text-xs">Optical Scanner Active (Camera / Handheld Scan)</p>
+                        </div>
+
+                        <div class="flex gap-2">
+                            <input type="text" x-model="scanInput" placeholder="Enter Token ID manually (e.g. AFE-PWA-10293)" class="flex-1 p-2 text-xs rounded-lg border border-slate-300 outline-none">
+                            <button @click="processScan()" class="bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold px-4 py-2 rounded-lg transition">Verify Gate Token</button>
+                        </div>
+                    </div>
+
+                    <!-- Processing Output Card -->
+                    <div class="border border-slate-200 rounded-xl p-5 space-y-3 bg-white">
+                        <h3 class="font-bold text-slate-800 text-sm"><i class="fa-solid fa-clipboard-check mr-1.5 text-emerald-700"></i> Verification Result</h3>
+                        
+                        <template x-if="scannedResult">
+                            <div class="space-y-3 text-xs">
+                                <div class="p-3 bg-emerald-50 border border-emerald-200 rounded-lg text-emerald-900 font-bold flex justify-between">
+                                    <span>STATUS: VALID TOKEN</span>
+                                    <span x-text="scannedResult.id"></span>
+                                </div>
+                                <div class="grid grid-cols-2 gap-2 text-slate-700">
+                                    <div class="bg-slate-50 p-2 rounded"><strong>Farmer:</strong> <span x-text="scannedResult.name"></span></div>
+                                    <div class="bg-slate-50 p-2 rounded"><strong>Crop:</strong> <span x-text="scannedResult.crop"></span></div>
+                                    <div class="bg-slate-50 p-2 rounded"><strong>Quantity:</strong> <span x-text="scannedResult.weight + ' Qtl'"></span></div>
+                                    <div class="bg-slate-50 p-2 rounded"><strong>e-KYC Land Match:</strong> <span class="text-emerald-600 font-bold">100% Verified</span></div>
+                                </div>
+                                <div class="p-3 bg-slate-900 text-slate-100 rounded-lg space-y-2">
+                                    <span class="text-[10px] text-emerald-400 font-mono">PFMS Direct Benefit Transfer Pipeline</span>
+                                    <p class="text-[11px]">Token entry recorded. Automatic moisture & quality grading report linked upon weighbridge clearance.</p>
+                                </div>
+                            </div>
+                        </template>
+
+                        <template x-if="!scannedResult">
+                            <div class="h-48 border border-slate-100 rounded-lg flex items-center justify-center text-center p-4 text-xs text-slate-400">
+                                Scan a token or manually enter a Token ID to load entry verification data.
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: USER STORIES & SYSTEM IMPACT -->
+        <section x-show="activeTab === 'stories'" class="space-y-6">
+            
+            <!-- Real-World Impact Metrics -->
+            <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-4">
+                <h2 class="text-xl font-bold text-slate-800">System Impact Metrics</h2>
+                <div class="grid md:grid-cols-3 gap-4 text-xs">
+                    <div class="p-4 bg-emerald-50 border border-emerald-100 rounded-xl">
+                        <i class="fa-solid fa-hourglass-half text-emerald-700 text-xl mb-2"></i>
+                        <h4 class="font-bold text-emerald-950 text-sm">Wait Time Drop</h4>
+                        <p class="text-emerald-800 mt-1">Staggered dynamic tokens bring wait times down from 12–48 hours to 1–2 hours.</p>
+                    </div>
+                    <div class="p-4 bg-emerald-50 border border-emerald-100 rounded-xl">
+                        <i class="fa-solid fa-wheat-awn-circle-exclamation text-emerald-700 text-xl mb-2"></i>
+                        <h4 class="font-bold text-emerald-950 text-sm">Spoilage Prevention</h4>
+                        <p class="text-emerald-800 mt-1">Prevents post-harvest degradation caused by unseasonal rain while standing in open queues.</p>
+                    </div>
+                    <div class="p-4 bg-emerald-50 border border-emerald-100 rounded-xl">
+                        <i class="fa-solid fa-receipt text-emerald-700 text-xl mb-2"></i>
+                        <h4 class="font-bold text-emerald-950 text-sm">Transparent DBT Tracking</h4>
+                        <p class="text-emerald-800 mt-1">SMS alerts send instant updates for quality assessment results and PFMS payment transfers.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Field User Stories -->
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- Story 1 -->
+                <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-3">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-sm">RK</div>
+                        <div>
+                            <h3 class="font-bold text-slate-800 text-sm">Ramesh Kumar (Smallholder Farmer)</h3>
+                            <p class="text-xs text-slate-400">Uses Feature Phone (IVR / USSD Access Channel)</p>
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-600 leading-relaxed">
+                        "Previously, I had to wait with my wheat tractor outside the mandi gate for two days under open weather. With Agri Farma Express, I called the toll-free number from my feature phone, booked a slot for 11:00 AM, and arrived directly at my turn. I saved 30 hours of waiting."
+                    </p>
+                    <span class="inline-block bg-slate-100 text-slate-600 text-[10px] px-2.5 py-1 rounded font-medium">IVR Voice Channel Verification</span>
+                </div>
+
+                <!-- Story 2 -->
+                <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-3">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-sm">MS</div>
+                        <div>
+                            <h3 class="font-bold text-slate-800 text-sm">Mohan Singh (Mandi Gate Operator)</h3>
+                            <p class="text-xs text-slate-400">Uses Low-Hardware Tablet App</p>
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-600 leading-relaxed">
+                        "Managing traffic at the Mandi gate used to be chaotic. Now, we simply scan the farmer's QR token on a basic tablet. The land records and e-KYC status display immediately, and the live queue updates automatically on the public board."
+                    </p>
+                    <span class="inline-block bg-slate-100 text-slate-600 text-[10px] px-2.5 py-1 rounded font-medium">Low Field Hardware Operational Model</span>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-slate-900 text-slate-400 text-xs py-8 mt-12 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div>
+                <p class="font-bold text-slate-200">Agri Farma Express — Hexa Core</p>
+                <p class="text-slate-500 mt-0.5">Smart India Hackathon 2026 | Problem Statement ID: 26032[cite: 1]</p>
+            </div>
+            <div class="text-right">
+                <p>Department of Consumer Affairs (DOCA) System Architecture[cite: 1]</p>
+                <p class="text-emerald-400">Deployed via GitHub Pages</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- APP SCRIPT LOGIC -->
+    <script>
+        function agriApp() {
+            return {
+                activeTab: 'portal',
+                channel: 'pwa',
+                scanInput: '',
+                scannedResult: null,
+                form: {
+                    name: '',
+                    aadhaar: '',
+                    crop: 'Wheat (Gehun)',
+                    weight: '',
+                    mandi: 'Central APMC Yard - Hub 01'
+                },
+                activeToken: null,
+                queue: [
+                    { id: 'AFE-PWA-10293', name: 'Suresh Patel', crop: 'Wheat', weight: 45, slot: '10:00 - 10:30 AM', inGeofence: true, stage: 'Weighbridge Quality Test', isUser: false },
+                    { id: 'AFE-IVR-88392', name: 'Baljit Singh', crop: 'Paddy', weight: 60, slot: '10:30 - 11:00 AM', inGeofence: true, stage: 'Waiting Entry', isUser: false },
+                    { id: 'AFE-WA-49201', name: 'Vikram Verma', crop: 'Pulses', weight: 30, slot: '11:00 - 11:30 AM', inGeofence: false, stage: 'Waiting Entry', isUser: false },
+                    { id: 'AFE-CSC-30219', name: 'Harpreet Kaur', crop: 'Wheat', weight: 55, slot: '11:30 - 12:00 PM', inGeofence: false, stage: 'Waiting Entry', isUser: false }
+                ],
+                generateToken(sourceChannel) {
+                    const randomID = 'AFE-' + Math.floor(100000 + Math.random() * 900000);
+                    const newToken = {
+                        id: randomID,
+                        name: this.form.name || 'Ramesh Kumar',
+                        aadhaar: this.form.aadhaar || '999988887777',
+                        crop: this.form.crop,
+                        weight: this.form.weight || 40,
+                        mandi: this.form.mandi,
+                        slot: 'Today, 10:30 - 11:30 AM',
+                        channel: sourceChannel,
+                        inGeofence: false,
+                        stage: 'Waiting Entry',
+                        isUser: true
+                    };
+                    
+                    this.activeToken = newToken;
+                    this.queue.unshift(newToken);
+                },
+                toggleGeofence() {
+                    if (this.activeToken) {
+                        this.activeToken.inGeofence = !this.activeToken.inGeofence;
+                    }
+                },
+                addMockFarmer() {
+                    const names = ['Gurpreet Singh', 'Anil Yadav', 'Rajesh Sharma', 'Devendra Gowda'];
+                    const crops = ['Wheat', 'Paddy', 'Mustard'];
+                    const randomName = names[Math.floor(Math.random() * names.length)];
+                    const randomCrop = crops[Math.floor(Math.random() * crops.length)];
+                    const randomID = 'AFE-AUTO-' + Math.floor(100000 + Math.random() * 900000);
+
+                    this.queue.push({
+                        id: randomID,
+                        name: randomName,
+                        crop: randomCrop,
+                        weight: Math.floor(20 + Math.random() * 50),
+                        slot: 'Dynamic Allocation',
+                        inGeofence: Math.random() > 0.5,
+                        stage: 'Waiting Entry',
+                        isUser: false
+                    });
+                },
+                advanceStage(index) {
+                    const stages = ['Waiting Entry', 'Weighbridge Quality Test', 'Unloading Completed'];
+                    const currentStage = this.queue[index].stage;
+                    const nextIndex = (stages.indexOf(currentStage) + 1) % stages.length;
+                    this.queue[index].stage = stages[nextIndex];
+                },
+                processScan() {
+                    const targetID = this.scanInput.trim().toUpperCase();
+                    const found = this.queue.find(q => q.id.toUpperCase() === targetID);
+                    if (found) {
+                        this.scannedResult = found;
+                    } else {
+                        this.scannedResult = {
+                            id: targetID || 'AFE-TEST-99',
+                            name: 'Verified Farmer',
+                            crop: 'Wheat',
+                            weight: 50
+                        };
+                    }
+                }
+            };
+        }
+    </script>
+</body>
+</html>
